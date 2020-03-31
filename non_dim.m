@@ -8,12 +8,19 @@ function [nonDimParams] = non_dim(dimParams, L, V)
 % clear = clearance between obstacles
 % scale = length scale 
 
+%%
+
+% I'm trying not to hard code numbers into this solver. I believe this will
+% allow for extra flexibility with any features we'd like to add to the
+% code in the future. We should try keep everything as programatic as
+% possible
+
 %% 
 parameters = fieldnames(dimParams);
 
 for i = 1:numel(parameters)
     name = parameters{i};
-    name_ = append(name, '_');
+    name_ = [name, '_'];
 
     % Check for velocity data, requires velocity data to be names with
     % 'vel' in its name.
