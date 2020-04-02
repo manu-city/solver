@@ -1,0 +1,100 @@
+function [A, pointer] = poisson(mesh)
+
+n = mesh.nx;
+m = mesh.ny;
+dx = mesh.dx;
+dy = mesh.dy;
+A = zeros(n*m, n*m);
+
+% Centre of the domain
+for i = 2:n-1
+    for j = 2:m-1
+        pointer = (j - 1)*n + i;
+        A(pointer, pointer + n) = 1/dy^2;
+        A(pointer, pointer + 1) = 1/dx^2;
+        A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+        A(pointer, pointer - 1) = 1/dx^2;
+        A(pointer, pointer - n) = 1/dy^2;
+    end
+end
+
+% Top of the domain
+for i = 2:n-1
+    j = m;
+    pointer = (j - 1)*n + i;
+    A(pointer, pointer - n) = 2/dy^2;
+    A(pointer, pointer + 1) = 1/dx^2;
+    A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+    A(pointer, pointer - 1) = 1/dx^2;
+end
+
+% Bottom of the domain
+for i = 2:n-1
+    j = 1;
+    pointer = (j - 1)*n + i;
+    A(pointer, pointer + n) = 2/dy^2;
+    A(pointer, pointer + 1) = 1/dx^2;
+    A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+    A(pointer, pointer - 1) = 1/dx^2;   
+end
+
+% Right of the domain
+for j = 2:m-1
+    i = n;
+    pointer = (j - 1)*n + i;
+    A(pointer, pointer  + n) = 1/dy^2;
+    A(pointer, pointer - (n-2)) = 1/dx^2;
+    A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+    A(pointer, pointer - 1) = 1/dx^2;
+    A(pointer, pointer - n) = 1/dy^2;
+end
+
+% Left of the domain
+for j = 2:m-1
+    i = 1;
+    pointer = (j - 1)*n + i;
+    A(pointer, pointer  + n) = 2/dy^2;
+    A(pointer, pointer + 1) = 1/dx^2;
+    A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+    A(pointer, pointer + (n-2)) = 1/dx^2;  
+    A(pointer, pointer - n) = 1/dy^2;
+end
+
+% Top right corner
+j = m;
+i = n;
+pointer = (j - 1)*n + i;
+
+A(pointer, pointer - n) = 2/dy^2;
+A(pointer, pointer - (n-2)) = 1/dx^2;
+A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+A(pointer, pointer - 1) = 1/dx^2;
+
+% Bottom right corner
+j = 1;
+i = n;
+pointer = (j - 1)*n + i;
+A(pointer , pointer + n) = 1/dy^2;
+A(pointer, pointer - (n-2)) = 1/dx^2;
+A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+A(pointer, pointer - 1) = 1/dx^2;
+
+% Bottom left corner
+i = 1;
+j = 1;
+pointer = (j - 1)*n + i;
+A(pointer, pointer + n) = 2/dy^2;
+A(pointer, pointer + 1) = 1/dx^2;
+A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+A(pointer, pointer + (n-2)) = 1/dx^2;
+
+% Top left corner
+i = 1;
+j = m;
+pointer = (j - 1)*n + i;
+A(pointer, pointer - n) = 2/dy^2;
+A(pointer, pointer + 1) = 1/dx^2;
+A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+A(pointer, pointer + (n-2)) = 1/dx^2;       
+end
+
