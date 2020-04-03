@@ -4,7 +4,7 @@ function [F1P] = F1P(N,M,P,mesh)
 
 F1P = zeros(N,M);
 
-for k = 1:M
+for k = 1:N
     % Left
     F1P(k,1) = (-P(k,2) - P(k,N-1))/(2*mesh.dx);
     
