@@ -1,6 +1,8 @@
-function [F2P] = F2P(N,M,P,mesh)
+function [F2P] = F2P(P,mesh)
 % Function file which creates the Divergence of Pressure Flux matrix for
 % the N-S equation that's a function of the 'v' velocity
+N = mesh.nx;
+M = mesh.ny;
 
 F2P = zeros(N,M);
 

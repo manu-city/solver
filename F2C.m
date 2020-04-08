@@ -1,6 +1,8 @@
-function [F2C] = F2C(N,M,u,v,mesh)
+function [F2C] = F2C(u,v,mesh)
 % Function file which creates the Divergence of Convective Flux matrix for
 % the N-S equation that's a function of the 'v' velocity
+N = mesh.nx;
+M = mesh.ny;
 
 F2C = zeros(N,M);
 
@@ -29,7 +31,6 @@ for i = 2:N-1
         
         % Right
         F2C(i,M) = -(v(i,M-1)*v(i,M-1)/(2*mesh.dy));
-        
         
         % Top Right Corner
         F2C(1,M) = -(v(1,M-1)*v(1,M-1)/(2*mesh.dy));

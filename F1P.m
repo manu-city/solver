@@ -1,6 +1,8 @@
-function [F1P] = F1P(N,M,P,mesh)
+function [F1P] = F1P(P,mesh)
 % Function file which creates the Divergence of Pressure Flux matrix for
 % the N-S equation that's a function of the 'u' velocity
+N = mesh.nx;
+M = mesh.ny;
 
 F1P = zeros(N,M);
 
