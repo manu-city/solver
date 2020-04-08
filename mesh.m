@@ -1,8 +1,14 @@
 function [mesh] = mesh(nonDimParams, N, M)
 
+%% 
+
+% Can't figure out a way of doing all of this better.
+
+%%
+
 % dx and dy for uniform grid
-mesh.dx = nonDimParams.L_/N;
-mesh.dy = nonDimParams.H_/M;
+mesh.dx = nonDimParams.L_/M;
+mesh.dy = nonDimParams.H_/N;
 
 % Number of index points
 mesh.nx = nonDimParams.L_/mesh.dx + 1;
