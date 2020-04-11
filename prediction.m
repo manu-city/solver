@@ -19,13 +19,15 @@ end
 u_0 = solution.u;
 v_0 = solution.v;
 
-% Initialising predictions and 
+% Initialising predictions and A
 predU   = zeros(N,M);
 predV   = zeros(N,M);
-A       = zeros(N,1);
-
+A       = zeros(N,1); % single coloumn vector due to A matrix generation 
+                      % method below
+                      
 % b matrix
 
+% initial time step
 if k == 1
     b1 = u_0 + 1.5 * dt * G.G1 + dt * W.W1;
     b2 = v_0 + 1.5 * dt * G.G2 + dt * W.W2;
@@ -38,8 +40,8 @@ end
 beta = dt/(2*Re*dy^2);
 
 % u-velocity A matrix
-A_u = full(spdiags([A - beta...
-                    A + 1 + 2*beta...
+A_u = full(spdiags([A - beta ...
+                    A + 1 + 2*beta ...
                     A - beta], -1:1, N, N));
            
 % v-velocity A matrix
@@ -63,6 +65,7 @@ for j = 1:M
     
     % Top (v-velocity = 0)
     predV(1, j) = 0;
+    
 end
 
 prediction.predU = predU;
