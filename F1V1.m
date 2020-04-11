@@ -3,11 +3,11 @@ function [F1V1]=F1V1(N,M,u,mesh,nonDimParams)
 F1V1=zeros(N,M);
 
 
-for r=2:N
+for r=1:N
     
      
-      % left
-       F1V1(r,1)=(1/nonDimParams.reynolds_)*((u(r,2)-u(r,2)+u(r,M-1))/(mesh.dx)^2);
+       % left
+       F1V1(r,1)=(1/nonDimParams.reynolds_)*((u(r,2)-2*u(r,1)+u(r,M-1))/(mesh.dx)^2);
        
        % right
        F1V1(r,M)=(1/nonDimParams.reynolds_)*((u(r,2)-2*u(r,M)+u(r,M-1))/((mesh.dx)^2));

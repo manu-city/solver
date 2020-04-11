@@ -8,7 +8,7 @@ for r=1:M
         F2V2(1,r)=(1/nonDimParams.reynolds_)*((v(2,r)+v(2,r))/(mesh.dy)^2);
         
         %bottom
-        F2V2(N,r)=(1/nonDimParams.reynolds_)*((v(N-1,r)-v(N-1,r))/(mesh.dy)^2);
+        F2V2(N,r)=(1/nonDimParams.reynolds_)*((v(N-1,r)+v(N-1,r))/(mesh.dy)^2);
         
 end 
 
