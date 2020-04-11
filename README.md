@@ -99,6 +99,11 @@
         %% Update of velocity
 
         [solution] = update(mesh, Pressure, dt, pred, N, M);
+        
+        %%
+        UBulk = (sum(solution.u(2:end-1, 1)) + 0.5*solution.u(1,1) + 0.5*solution.u(N,1))/(N-1);
+        duBulk = (1-UBulk)/dt;
+        force = duBulk;
 
         %% Time marching
 
