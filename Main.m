@@ -27,8 +27,8 @@ V                 = dimParams.bulkvel;
 %% Domain Discretisation 
 
 % Number of x and y points
-N                 = 100; %10
-M                 = 50; %20
+N                 = 100; 
+M                 = 50; 
 
 % Mesh the domain, obtain corresponding data from the mesh
 [mesh]            = mesh(nonDimParams, N, M);
@@ -47,6 +47,7 @@ ic.P              = ones(N, M);
 solution.u = ic.u_velocity;
 solution.v = ic.v_velocity;
 solution.P = ic.P;
+force = 0;
 
 %% Initial time step
 
@@ -55,7 +56,7 @@ t = zeros();
 k = 1;
 t(k) = 0;
 
-while k < 50
+while true
     
     %% Divergence of Convective Flux matrix
 
@@ -76,8 +77,8 @@ while k < 50
 
     %% G Functions
 
-    G.G1 = conv_flux.F1C + visc_flux.F1V1;
-    G.G2 = conv_flux.F2C + visc_flux.F2V2;
+    G.G1 = conv_flux.F1C + visc_flux.F1V1 + force;
+    G.G2 = conv_flux.F2C + visc_flux.F2V1;
 
     %% W Functions
 
@@ -99,7 +100,13 @@ while k < 50
     %% Update of velocity
 
     [solution] = update(mesh, Pressure, dt, pred, N, M);
-
+    
+    %% 
+    
+    UBulk = (sum(solution.u(2:end-1, 1)) + 0.5*solution.u(1,1) + 0.5*solution.u(N,1))/(N-1);
+    duBulk = (1-UBulk)/dt;
+    force = duBulk;
+    
     %% Time marching
 
     [dt] = marching(mesh, solution, CFL, sigma, nonDimParams);
@@ -107,7 +114,12 @@ while k < 50
     k = k + 1;
     t(k) = t(k-1) + dt;
     
-    imagesc(solution.u)
+    %% Displaying
+    
+    contourf(flip(solution.u,1))
+    colormap('jet')
+    colorbar
+    caxis([0 1])
     drawnow
 end
 
