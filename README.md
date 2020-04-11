@@ -37,9 +37,9 @@
         j = M;
         pointer = (i - 1)*M + j;
         A(pointer, pointer - M) = 1/dy^2;
-        A(pointer, pointer + (M-2)) = 1/dx^2;
+        A(pointer, pointer - (M-2)) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-        A(pointer, pointer + 1) = 1/dx^2;
+        A(pointer, pointer - 1) = 1/dx^2;
         A(pointer, pointer + M) = 1/dy^2;
         b(pointer,1) = 2/dt * ((u(i,2) - u(i,j-1))/2*dx + ...
                                (v(i+1,M) - v(i-1,M))/2*dy);
@@ -48,9 +48,9 @@
         j = 1;
         pointer = (i - 1)*M + j;
         A(pointer, pointer - M) = 2/dy^2;
-        A(pointer, pointer - 1) = 1/dx^2;
+        A(pointer, pointer + 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-        A(pointer, pointer - (M-2)) = 1/dx^2;  
+        A(pointer, pointer + (M-2)) = 1/dx^2;  
         A(pointer, pointer + M) = 1/dy^2;
         b(pointer,1) = 2/dt * ((u(i,2) - u(i,M-1))/2*dx + ...
                                (v(i+1,1) - v(i-1,1))/2*dy); 
@@ -102,9 +102,9 @@
                 case N + 1
                     pointer = (i - 1)*M + j;
                     A(pointer, pointer - M) = 2/dy^2;
-                    A(pointer, pointer - 1) = 1/dx^2;
+                    A(pointer, pointer + 1) = 1/dx^2;
                     A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-                    A(pointer, pointer - (M-2)) = 1/dx^2;
+                    A(pointer, pointer + (M-2)) = 1/dx^2;
                     b(pointer,1) = 2/dt * ((u(N,2) - u(N,M-1))/2*dx + ...
                                            (v(N-1,1) - v(N-1,1))/2*dy);
 
@@ -112,27 +112,20 @@
                 case 1 + M
                     pointer = (i - 1)*M + j;
                     A(pointer, pointer + M) = 2/dy^2;
-                    A(pointer, pointer + (M-2)) = 1/dx^2;
+                    A(pointer, pointer - (M-2)) = 1/dx^2;
                     A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-                    A(pointer, pointer + 1) = 1/dx^2;
+                    A(pointer, pointer - 1) = 1/dx^2;
                     b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/2*dx + ...
                                            (v(2,M) + v(2,M))/2*dy);
 
                 % Top left corner   
                 case 1 + 1
                     pointer = (i - 1)*M + j;
-                    A(pointer, pointer + M) = 2/dy^2;
-                    A(pointer, pointer + 1) = 1/dx^2;
-                    A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-                    A(pointer, pointer + (M-2)) = 1/dx^2;
-                    b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/2*dx + ...
-                                           (v(2,1) + v(2,1))/2*dy);
+                    A(pointer, pointer) = 1;
+                    b(pointer,1) = 0
             end
         end
     end
- 
-## Stability point
-    A(1,1) = 0;
     
 ## Sparse A
     A = sparse(A);
