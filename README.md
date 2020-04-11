@@ -44,6 +44,7 @@
     solution.u = ic.u_velocity;
     solution.v = ic.v_velocity;
     solution.P = ic.P;
+    force = 0;
 
 ## Initial time step
 
@@ -54,7 +55,7 @@
 
 ## Time loop
 
-    while k < 50
+    while true
 
         %% Divergence of Convective Flux matrix
 
@@ -106,7 +107,10 @@
         k = k + 1;
         t(k) = t(k-1) + dt;
 
-        imagesc(solution.u)
+        contourf(flip(solution.u,1))
+        colormap('jet')
+        colorbar
+        caxis([0 1])
         drawnow
     end
 
