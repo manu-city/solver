@@ -1,22 +1,36 @@
 function [F2V2]=F2V2(N,M,v,mesh,nonDimParams)
 
 F2V2=zeros(N,M);
+Re = nonDimParams.reynolds_;
 
-for r=1:M
-
-        %top
-        F2V2(1,r)=(1/nonDimParams.reynolds_)*((v(2,r)+v(2,r))/(mesh.dy)^2);
+for j = 2:M-1         % COLUMNS
+    for i = 2:N-1     % ROWS
+        % Center
+        F2V2(i,j) = (1/Re)*((v(i,j+1)-2*v(i,j)+v(i,j-1))/((mesh.dy)^2));
         
-        %bottom
-        F2V2(N,r)=(1/nonDimParams.reynolds_)*((v(N-1,r)+v(N-1,r))/(mesh.dy)^2);
+        % Left
+        F2V2(i,1) = (1/Re)*((v(i,2)-2*v(i,1)+v(i,M-1))/((mesh.dy)^2));
         
-end 
-
-for i=2:N-1
-    for j=2:M-1
-       
-        % center
-        F2V2(i,j)=(1/nonDimParams.reynolds_)*((v(i+1,j)-2*v(i,j)+v(i-1,j))/((mesh.dy)^2));
-      
+        % Right
+        F2V2(i,M) = (1/Re)*((v(i,2)-2*v(i,M)+v(i,M-1))/((mesh.dy)^2));
+        
+        % Bottom
+        F2V2(1,j) = 0;
+        
+        % Top
+        F2V2(M,j) = 0;
     end 
 end 
+        % Bottom Left Corner
+        F2V2(1,1) = 0;
+        
+        % Bottom Right Corner
+        F2V2(1,M) = 0;
+        
+        % Top Left Corner
+        F2V2(N,1) = 0;
+        
+        % Top Right Corner
+        F2V2(N,M) = 0;
+end 
+

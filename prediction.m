@@ -29,8 +29,8 @@ A       = zeros(N,1); % single coloumn vector due to A matrix generation
 
 % initial time step
 if k == 1
-    b1 = u_0 + 1.5 * dt * G.G1 + dt * W.W1;
-    b2 = v_0 + 1.5 * dt * G.G2 + dt * W.W2;
+    b1 = u_0 + dt * G.G1 + dt * W.W1;
+    b2 = v_0 + dt * G.G2 + dt * W.W2;
 else
     b1 = u_0 + 1.5 * dt * G.G1 - 0.5 * dt2 * GP.G1 + dt * W.W1;
     b2 = v_0 + 1.5 * dt * G.G2 - 0.5 * dt2 * GP.G2 + dt * W.W2;
@@ -71,4 +71,3 @@ end
 prediction.predU = predU;
 prediction.predV = predV;
 end
-
