@@ -1,4 +1,4 @@
-function [prediction] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, N, M)
+function [pred] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, N, M)
 
 % Extracting Variables
 Re  = nonDimParams.reynolds_;
@@ -68,6 +68,6 @@ for j = 1:M
     
 end
 
-prediction.predU = predU;
-prediction.predV = predV;
+pred.predU = predU;
+pred.predV = predV;
 end

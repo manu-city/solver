@@ -26,8 +26,8 @@ V                 = dimParams.bulkvel;
 %% Domain Discretisation 
 
 % Number of x and y points
-N                 = 150; % ROWS
-M                 = 50;  % COLUMNS
+N                 = 75;     % ROWS
+M                 = 100;    % COLUMNS
 
 % Mesh the domain, obtain corresponding data from the mesh
 [mesh]            = mesh(nonDimParams, N, M);
@@ -40,7 +40,7 @@ sigma = 0.3;
 %% Initial Conditions
 
 ic.u_velocity     = ones(N, M);  
-ic.v_velocity     = ones(N, M);
+ic.v_velocity     = zeros(N, M);
 ic.P              = ones(N, M);
 
 solution.u = ic.u_velocity;
@@ -119,7 +119,7 @@ tic
     title(['Iterations = ',num2str(k)])
     colormap('parula')
     colorbar
-    caxis([0 1])
+    caxis([min(solution.u,[],'all') max(solution.u,[],'all')])
     drawnow
 toc
 end

@@ -1,19 +1,19 @@
-function [VOF, prediction] = obstacles(mesh, nonDimParams, dimParams, N, M, prediction)
+function [VOF, pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred)
 
 dx = mesh.dx;
 dy = mesh.dy;
 
 o_x = nonDimParams.o_x_;
 o_y = nonDimParams.o_y_;
-clear = nonDimParams.clear_;
+clearance = nonDimParams.clear_;
 
 o_num = dimParams.o_num;
 
-u = prediction.predU;
-v = prediction.predV;
+u = pred.predU;
+v = pred.predV;
 
 % Grid points in x in between ribs
-spacing = clear/dx;
+spacing = clearance/dx;
 
 % Grid points in x rib occupies
 o_length = o_x/dx;
@@ -24,7 +24,7 @@ o_height = o_y/dy;
 % domain
 VOF = ones(N,M);
 
-for i = N-(o_height - 1):N
+for i = N-(o_height):N
     
     for n = 1:o_num
         switch n
@@ -33,14 +33,14 @@ for i = N-(o_height - 1):N
                     VOF(i,j) = 0;    
                 end
             otherwise 
-                for j = spacing * (n) + (2*n-3):spacing * (n) + (2*n-3) + o_length
+                for j = (spacing + o_length) * (n) - (spacing/2 + o_length - 1) : (spacing + o_length) * (n) - (spacing/2 + o_length - 1) + o_length
                     VOF(i,j) = 0;
                 end
         end 
     end
 end
 
-prediction.predU = u .* VOF;
-prediction.predV = v .* VOF;
+pred.predU = u .* VOF;
+pred.predV = v .* VOF;
 
 end
