@@ -15,22 +15,21 @@ for j = 2:M-1         % COLUMNS
         F2V1(i,M) = (1/Re)*((v(i,2)-2*v(i,M)+v(i,M-1))/((mesh.dx)^2));
         
         % Bottom
-        F2V1(1,j) = 0;
+        F2V1(N,j) = 0;
         
         % Top
-        F2V1(M,j) = 0;
+        F2V1(1,j) = 0;
     end 
 end 
         % Bottom Left Corner
-        F2V1(1,1) = 0;
-        
-        % Bottom Right Corner
-        F2V1(1,M) = 0;
-        
-        % Top Left Corner
         F2V1(N,1) = 0;
         
-        % Top Right Corner
+        % Bottom Right Corner
         F2V1(N,M) = 0;
+        
+        % Top Left Corner
+        F2V1(1,1) = 0;
+        
+        % Top Right Corner
+        F2V1(1,M) = 0;
 end 
-

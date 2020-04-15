@@ -44,4 +44,3 @@ prediction.predU = u .* VOF;
 prediction.predV = v .* VOF;
 
 end
-

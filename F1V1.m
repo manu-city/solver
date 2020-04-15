@@ -15,10 +15,10 @@ for j = 2:M-1         % COLUMNS
         F1V1(i,M) = (1/Re)*((u(i,2)-2*u(i,M)+u(i,M-1))/((mesh.dx)^2));
         
         % Bottom
-        F1V1(1,j) = 0;
+        F1V1(N,j) = 0;
         
         % Top
-        F1V1(M,j) = (1/Re)*((u(M,j+1)-2*u(M,j)+u(M,j-1))/((mesh.dx)^2));
+        F1V1(1,j) = (1/Re)*((u(1,j+1)-2*u(1,j)+u(1,j-1))/((mesh.dx)^2));
     end 
 end 
         % Bottom Left Corner
@@ -28,9 +28,8 @@ end
         F1V1(1,M) = 0;
         
         % Top Left Corner
-        F1V1(N,1) = (1/Re)*((u(N,2)-2*u(N,1)+u(N,M-1))/((mesh.dx)^2));
+        F1V1(1,1) = (1/Re)*((u(1,2)-2*u(1,1)+u(1,M-1))/((mesh.dx)^2));
         
         % Top Right Corner
-        F1V1(N,M) = (1/Re)*((u(N,2)-2*u(N,M)+u(N,M-1))/((mesh.dx)^2));
+        F1V1(1,M) = (1/Re)*((u(1,2)-2*u(1,M)+u(1,M-1))/((mesh.dx)^2));
 end 
-

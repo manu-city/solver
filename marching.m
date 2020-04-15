@@ -15,4 +15,3 @@ min_3 = min(dx^2/nu);
 dt = min(CFL * min(min_1, min_2), sigma * min_3);
 
 end
-
