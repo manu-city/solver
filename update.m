@@ -1,11 +1,11 @@
-function [solution] = update(mesh, Pressure, dt, prediction, N, M)
+function [solution] = update(mesh, Pressure, dt, pred, N, M)
 
 dx = mesh.dx;
 dy = mesh.dy;
 
 p = Pressure;
-pred_u = prediction.predU;
-pred_v = prediction.predV;
+pred_u = pred.VOFu;
+pred_v = pred.VOFv;
 
 u  = zeros(N,M);
 v  = zeros(N,M);
@@ -48,16 +48,18 @@ j = M;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,2) - p(i,j-1))/(2*dx);
 
 % Top Left
+i = 1;
 j = 1;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,M-1))/(2*dx);
 
 % Bottom of domain
-i = N;
-u(i,:) = 0;
-v(i,:) = 0;
-
+for i = N
+    for j = 1:M
+        u(i,j) = 0;
+        v(i,j) = 0;
+    end
+end
 solution.u = u;
 solution.v = v;
 solution.P = p;
-
 end

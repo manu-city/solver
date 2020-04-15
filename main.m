@@ -26,7 +26,7 @@ V                 = dimParams.bulkvel;
 %% Domain Discretisation 
 
 % Number of x and y points
-N                 = 75;     % ROWS
+N                 = 50;    % ROWS
 M                 = 100;    % COLUMNS
 
 % Mesh the domain, obtain corresponding data from the mesh
@@ -90,11 +90,11 @@ tic
 toc
     %% Inmersed Boundary Method - 7
 tic
-    [VOF, pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred);
+    [pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred);
 toc
     %% Poisson Solver - 8
 tic
-    [Pressure, A, b] = poisson(mesh, N, M, dt, solution);
+    [Pressure, A, b] = poisson(mesh, N, M, dt, pred);
 toc
     %% Update of velocity - 9
 tic
@@ -102,7 +102,7 @@ tic
 toc    
     %% U Bulk - 10
 tic    
-    UBulk = (sum(solution.u(2:end-1, 1)) + 0.5*solution.u(1,1) + 0.5*solution.u(N,1))/(N-1);
+    UBulk = (sum(solution.u(2:end-1, 1)) + 0.5*solution.u(1,1) + 0.5*solution.u(N,1))/(N);
     duBulk = (1-UBulk)/dt;
     force = duBulk;
 toc    
@@ -115,9 +115,9 @@ tic
 toc    
     %% Displaying - 12
 tic    
-    contourf(flip(solution.u))
-    title(['Iterations = ',num2str(k)])
-    colormap('parula')
+    imagesc((solution.u))
+    title(['Iterations = ',num2str(k), 'Total Time =',sum(t)])
+    colormap('parula(10)')
     colorbar
     caxis([min(solution.u,[],'all') max(solution.u,[],'all')])
     drawnow

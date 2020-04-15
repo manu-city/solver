@@ -10,10 +10,10 @@ for j = 2:M-1         % COLUMNS
         F2P(i,j) = -(P(i+1,j) - P(i-1,j))/(2*mesh.dy);
         
         % Bottom
-        F2P(N,j) = -(- P(N-1,j))/(mesh.dy);
+        F2P(N,j) = 0;
         
         % Top
-        F2P(1,j) = -(P(2,j))/(mesh.dy);
+        F2P(1,j) = 0;
         
         % Left
         F2P(i,1) = -(P(i+1,1) - P(i-1,1))/(2*mesh.dy);
@@ -23,14 +23,14 @@ for j = 2:M-1         % COLUMNS
     end
 end
         % Bottom Left
-        F2P(N,1) = -(- P(N-1,1))/(mesh.dy);
+        F2P(N,1) = 0;
         
         % Bottom Right
-        F2P(N,M) = -(- P(N-1,M))/(mesh.dy);
+        F2P(N,M) = 0;
         
         % Top Left
-        F2P(1,1) = -(P(2,1))/(mesh.dy);
+        F2P(1,1) = 0;
         
         % Top Right
-        F2P(1,M) = -(P(2,M))/(mesh.dy);
+        F2P(1,M) = 0;
 end

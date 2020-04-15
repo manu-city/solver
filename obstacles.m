@@ -1,4 +1,4 @@
-function [VOF, pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred)
+function [pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred)
 
 dx = mesh.dx;
 dy = mesh.dy;
@@ -25,7 +25,6 @@ o_height = o_y/dy;
 VOF = ones(N,M);
 
 for i = N-(o_height):N
-    
     for n = 1:o_num
         switch n
             case 1 
@@ -40,7 +39,6 @@ for i = N-(o_height):N
     end
 end
 
-pred.predU = u .* VOF;
-pred.predV = v .* VOF;
-
+pred.VOFu = u .* VOF;
+pred.VOFv = v .* VOF;
 end
