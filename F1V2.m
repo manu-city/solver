@@ -1,5 +1,7 @@
-function [F1V2]=F1V2(N,M,u,mesh,nonDimParams)
-
+function [F1V2]=F1V2(solution,mesh,nonDimParams)
+u = solution.u;
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 F1V2=zeros(N,M);
 Re = nonDimParams.reynolds_;
 

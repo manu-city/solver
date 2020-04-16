@@ -1,5 +1,6 @@
-function [pred] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, N, M)
-
+function [pred] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution)
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 % Extracting Variables
 Re  = nonDimParams.reynolds_;
 dy  = mesh.dy;

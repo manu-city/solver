@@ -1,5 +1,6 @@
-function [Pressure, A, b] = poisson(mesh, N, M, dt, pred)
-
+function [Pressure, A, b] = poisson(mesh, dt, pred)
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 dx = mesh.dx;
 dy = mesh.dy;
 A = zeros(N*M,N*M);

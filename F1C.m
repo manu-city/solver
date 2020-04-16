@@ -1,6 +1,11 @@
-function [F1C] = F1C(N,M,u,v,mesh)
+function [F1C] = F1C(solution,mesh)
 % Function file which creates the Divergence of Convective Flux matrix for
 % the N-S equation that's a function of the 'u' velocity
+u = solution.u;
+v = solution.v;
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
+
 F1C = zeros(N,M);
 
 for j = 2:M-1         % COLUMNS
@@ -13,7 +18,7 @@ for j = 2:M-1         % COLUMNS
         %% Main Domain
         F1C(i,j) = -((u(i,j+1)*u(i,j+1) - u(i,j-1)*u(i,j-1))/(2*mesh.dx)) - ((u(i+1,j)*v(i+1,j) - u(i-1,j)*v(i-1,j))/(2*mesh.dy));
         %% Left
-        F1C(i,1) = -((u(i,2)*u(i,2)) - (-u(i,M-1)*-u(i,M-1)))/(2*mesh.dx) - ((u(i+1,1)*v(i+1,1)) - (u(i-1,1)*v(i-1,1)))/(2*mesh.dy); 
+        F1C(i,1) = -((u(i,2)*u(i,2) - -u(i,M-1)*-u(i,M-1))/(2*mesh.dx)) - ((u(i+1,1)*v(i+1,1) - u(i-1,1)*v(i-1,1))/(2*mesh.dy)); 
         
         % Right
         F1C(i,M) = -((u(i,2)*u(i,2) - u(i,M-1)*u(i,M-1))/(2*mesh.dx)) - ((u(i+1,M)*v(i+1,M) - u(i-1,M)*v(i-1,M))/(2*mesh.dy));       

@@ -26,8 +26,8 @@ V                 = dimParams.bulkvel;
 %% Domain Discretisation 
 
 % Number of x and y points
-N                 = 50;    % ROWS
-M                 = 100;    % COLUMNS
+N                 = 200;    % ROWS
+M                 = 60;    % COLUMNS
 
 % Mesh the domain, obtain corresponding data from the mesh
 [mesh]            = mesh(nonDimParams, N, M);
@@ -38,10 +38,12 @@ CFL = 0.6;
 sigma = 0.3;
 
 %% Initial Conditions
+N = mesh.ny;
+M = mesh.nx;
 
 ic.u_velocity     = ones(N, M);  
 ic.v_velocity     = zeros(N, M);
-ic.P              = ones(N, M);
+ic.P              = zeros(N, M);
 
 solution.u = ic.u_velocity;
 solution.v = ic.v_velocity;
@@ -59,20 +61,20 @@ while true
     
     %% Divergence of Convective Flux matrix - 1
 tic
-    conv_flux.F1C = F1C(N,M,solution.u,solution.v,mesh);
-    conv_flux.F2C = F2C(N,M,solution.u,solution.v,mesh);
+    conv_flux.F1C = F1C(solution,mesh);
+    conv_flux.F2C = F2C(solution,mesh);
 toc
     %% Divergence of Viscous Fluxes - 2
 tic
-    visc_flux.F1V1 = F1V1(N,M,solution.u,mesh,nonDimParams);
-    visc_flux.F1V2 = F1V2(N,M,solution.u,mesh,nonDimParams);
-    visc_flux.F2V1 = F2V1(N,M,solution.v,mesh,nonDimParams);
-    visc_flux.F2V2 = F2V2(N,M,solution.v,mesh,nonDimParams);
+    visc_flux.F1V1 = F1V1(solution,mesh,nonDimParams);
+    visc_flux.F1V2 = F1V2(solution,mesh,nonDimParams);
+    visc_flux.F2V1 = F2V1(solution,mesh,nonDimParams);
+    visc_flux.F2V2 = F2V2(solution,mesh,nonDimParams);
 toc
     %% Divergence of Pressure Flux matrix - 3
 tic
-    press_flux.F1P = F1P(N,M,solution.P,mesh);
-    press_flux.F2P = F2P(N,M,solution.P,mesh);
+    press_flux.F1P = F1P(solution,mesh);
+    press_flux.F2P = F2P(solution,mesh);
 toc
     %% G Functions - 4
 tic
@@ -86,19 +88,19 @@ tic
 toc
     %% Prediction Velocity - 6
 tic
-    [pred] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, N, M);
+    [pred] =  prediction(mesh, nonDimParams, G, W, dt, t, k, solution);
 toc
     %% Inmersed Boundary Method - 7
 tic
-    [pred] = obstacles(mesh, nonDimParams, dimParams, N, M, pred);
+    [pred] = obstacles(mesh, nonDimParams, dimParams, pred);
 toc
     %% Poisson Solver - 8
 tic
-    [Pressure, A, b] = poisson(mesh, N, M, dt, pred);
+    [Pressure, A, b] = poisson(mesh, dt, pred);
 toc
     %% Update of velocity - 9
 tic
-    [solution] = update(mesh, Pressure, dt, pred, N, M);
+    [solution] = update(mesh, Pressure, dt, pred);
 toc    
     %% U Bulk - 10
 tic    
@@ -115,8 +117,8 @@ tic
 toc    
     %% Displaying - 12
 tic    
-    imagesc((solution.u))
-    title(['Iterations = ',num2str(k), 'Total Time =',sum(t)])
+    contourf(flip(solution.u,1))
+    title(['Iterations = ',num2str(k)])
     colormap('parula(10)')
     colorbar
     caxis([min(solution.u,[],'all') max(solution.u,[],'all')])

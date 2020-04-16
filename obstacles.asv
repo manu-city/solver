@@ -1,12 +1,13 @@
-function [pred] = obstacles(mesh, nonDimParams, dimParams, pred)
-M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
-N = mesh.ny;   % Gridpoints in y-axis (Rows)
+function [pred] = obstacles(N,M, nonDimParams, dimParams, pred)
+N =25;
+M=50;
 dx = mesh.dx;
 dy = mesh.dy;
 
 o_x = nonDimParams.o_x_;
 o_y = nonDimParams.o_y_;
 clearance = nonDimParams.clear_;
+L = nonDimParams.L_;
 
 o_num = dimParams.o_num;
 
@@ -28,12 +29,21 @@ VOF = ones(N,M);
 for i = N-(o_height):N
     for n = 1:o_num
         switch n
+            case 1
+                for j = (N/L)*(5 * (n) - 2):(N/L)*(5 * (n) - 1)
+                    VOF(i,j) = 0
+                end
+            otherwise
+                for j = 
+for i = N-(o_height):N
+    for n = 1:o_num
+        switch n
             case 1 
                 for j = spacing/2 + 1:(spacing/2 + 1) + o_length
                     VOF(i,j) = 0;    
                 end
             otherwise 
-                for j = (spacing + o_length) * (n) - (spacing/2 + o_length - 1) : (spacing + o_length) * (n) - (spacing/2 + o_length - 1) + o_length
+                for j = 5*(n) - 2 : 5*(n) -1
                     VOF(i,j) = 0;
                 end
         end 

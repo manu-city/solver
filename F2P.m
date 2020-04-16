@@ -1,4 +1,7 @@
-function [F2P] = F2P(N,M,P,mesh)
+function [F2P] = F2P(solution,mesh)
+P = solution.P;
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 % Function file which creates the Divergence of Pressure Flux matrix for
 % the N-S equation that's a function of the 'u' velocity
 

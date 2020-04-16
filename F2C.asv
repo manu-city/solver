@@ -17,7 +17,7 @@ for j = 2:M-1         % COLUMNS
         %% Main Domain
         F2C(i,j) = -((u(i,j+1)*v(i,j+1) - u(i,j-1)*v(i,j-1))/(2*mesh.dx)) - ((v(i+1,j)*v(i+1,j) - v(i-1,j)*v(i-1,j))/(2*mesh.dy));
         %% Left
-        F2C(i,1) = -((u(i,2)*v(i,2) - u(i,M-1)*v(i,M-1))/(2*mesh.dx)) - ((v(i+1,1)*v(i+1,1) - v(i-1,1)*v(i-1,1))/(2*mesh.dy));  
+        F2C(i,1) = -((u(i,2)*v(i,2)) - u(i,M-1)*v(i,M-1))/(2*mesh.dx)) - ((v(i+1,1)*v(i+1,1) - v(i-1,1)*v(i-1,1))/(2*mesh.dy));  
         
         % Right
         F2C(i,M) = -((u(i,2)*v(i,2) - u(i,M-1)*v(i,M-1))/(2*mesh.dx)) - ((v(i+1,M)*v(i+1,M) - v(i-1,M)*v(i-1,M))/(2*mesh.dy));       

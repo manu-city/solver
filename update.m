@@ -1,5 +1,6 @@
-function [solution] = update(mesh, Pressure, dt, pred, N, M)
-
+function [solution] = update(mesh, Pressure, dt, pred)
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 dx = mesh.dx;
 dy = mesh.dy;
 
