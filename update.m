@@ -1,20 +1,19 @@
-function [solution] = update(mesh, Pressure, dt, pred)
-M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
-N = mesh.ny;   % Gridpoints in y-axis (Rows)
+function [solution] = update(mesh, Pressure, dt, prediction, N, M)
+
 dx = mesh.dx;
 dy = mesh.dy;
 
 p = Pressure;
-pred_u = pred.VOFu;
-pred_v = pred.VOFv;
+pred_u = prediction.predU;
+pred_v = prediction.predV;
 
 u  = zeros(N,M);
 v  = zeros(N,M);
 
-for i = 2:N-1       % ROWS
+for i = 2:N-1
     
     % Main Domain
-    for j = 2:M-1   % COLUMNS
+    for j = 2:M-1
         
         u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,j-1))/(2*dx);
         v(i,j) = pred_v(i,j) - (dt/2) * (p(i+1,j) - p(i-1,j))/(2*dy);
@@ -36,31 +35,29 @@ end
 for j = 2:M-1
     
     % Top of domain
-    i = N;
+    i = 1;
     u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,j-1))/(2*dx);
     v(i,j) = 0;
     
+    % Bottom of domain
+    i = N;
+    u(i,j) = 0;
+    v(i,j) = 0;
     
 end
 
 % Top Right
-i = N;
+i = 1;
 j = M;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,2) - p(i,j-1))/(2*dx);
 
 % Top Left
-i = N;
 j = 1;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,M-1))/(2*dx);
 
-% Bottom of domain
-for i = 1
-    for j = 1:M
-        u(i,j) = 0;
-        v(i,j) = 0;
-    end
-end
 solution.u = u;
 solution.v = v;
 solution.P = p;
+
 end
+

@@ -1,37 +1,18 @@
-function [F1V2]=F1V2(solution,mesh,nonDimParams)
-u = solution.u;
-M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
-N = mesh.ny;   % Gridpoints in y-axis (Rows)
-F1V2=zeros(N,M);
-Re = nonDimParams.reynolds_;
+function [F1V2]=F1V2(N,M,u,mesh,nonDimParams)
 
-for j = 2:M-1         % COLUMNS
-    for i = 2:N-1     % ROWS
-        % Main
-        F1V2(i,j) = (1/Re)*((u(i+1,j) - 2*u(i,j) + u(i-1,j))/((mesh.dy)^2));
-        
-        % Left
-        F1V2(i,1) = (1/Re)*((u(i+1,1) - 2*u(i,1) + u(i-1,1))/((mesh.dy)^2));
-        
-        % Right
-        F1V2(i,M) = (1/Re)*((u(i+1,M) - 2*u(i,M) + u(i-1,M))/((mesh.dy)^2));
-        
-        % Bottom
-        F1V2(1,j) = 0;
-        
-        % Top
-        F1V2(N,j) = (1/Re)*((2*u(N-1,j) - 2*u(N,j))/((mesh.dy)^2));
+F1V2=zeros(N,M);
+
+for r=1:M
+        % bottom
+        F1V2(N,r)=(1/nonDimParams.reynolds_)*((u(N-1,r) + u(N-1,r))/(mesh.dy)^2);
+        % top
+        F1V2(1,r)=(1/nonDimParams.reynolds_)*((u(2,r)-u(1,r)+ u(2,r))/(mesh.dy)^2);
+end 
+
+for i=2:N-1
+    for j=2:M-1     
+        % center
+        F1V2(i,j)=(1/nonDimParams.reynolds_)*((u(i+1,j)-2*u(i,j)+u(i-1,j))/((mesh.dy)^2));   
     end 
 end 
-        % Bottom Left Corner
-        F1V2(1,1) = 0;
-        
-        % Bottom Right Corner
-        F1V2(1,M) = 0;
-        
-        % Top Left Corner
-        F1V2(N,1) = (1/Re)*((2*u(N-1,j) - 2*u(N,1))/((mesh.dy)^2));
-        
-        % Top Right Corner
-        F1V2(N,M) = (1/Re)*((2*u(N-1,j) - 2*u(N,M))/((mesh.dy)^2));
 end 

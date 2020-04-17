@@ -11,13 +11,13 @@ dimParams.o_x     = 0.05;
 dimParams.o_y     = 0.05;
 dimParams.o_num   = 4;
 dimParams.bulkvel = 0.1;
-dimParams.clear   = (dimParams.L - dimParams.o_x * dimParams.o_num)/dimParams.o_num;
+dimParams.clear   = (dimParams.L - dimParams.o_x * dimParams.o_num)/4;
 dimParams.v       = 2e-5;
 
 %% Domain Non-dimensionalisation 
 
 % Length and velocity scales
-L                 = dimParams.H;
+L                 = dimParams.o_y;
 V                 = dimParams.bulkvel;
 
 % Non-dimensionalisation of parameters
@@ -26,79 +26,43 @@ V                 = dimParams.bulkvel;
 %% Domain Discretisation 
 
 % Number of x and y points
-N                 = 200;   % ROWS
-M                 = 60;    % COLUMNS
+N                 = 50;
+M                 = 100;
 
 % Mesh the domain, obtain corresponding data from the mesh
 [mesh]            = mesh(nonDimParams, N, M);
 
-%% Stability
+%% N-S Discretisation
 
-CFL = 0.6;
-sigma = 0.3;
+% Velocity vector
+u                 = zeros(M,N);
+v                 = zeros(M,N);
 
-%% Initial Conditions
-N = mesh.ny;
-M = mesh.nx;
+% Initial conditions; u(t=0) = bulkvel_, u(H_=0) = 0
+u(1,:)            = nonDimParams.bulkvel_;
+u(:,1)            = 0;
 
-ic.u_velocity     = ones(N, M);  
-ic.v_velocity     = zeros(N, M);
-ic.P              = zeros(N, M);
+% Divergence of Convective Flux
+[flux.F1C]        = F1C(N,M,u,v,mesh);
+[flux.F2C]        = F2C(N,M,u,v,mesh);
 
-solution.u = ic.u_velocity;
-solution.v = ic.v_velocity;
-solution.P = ic.P;
-force = 0;
-%% Initial time step
+% Divergence of Viscous Flux
+[flux.F1V1]       = F1V1(N,M,u,mesh,nonDimParams);
 
-t = zeros();
-[dt] = marching(mesh, solution, CFL, sigma, nonDimParams);
-k = 1;
-t(k) = 0;
+[flux.F1V2]       = F1V2(N,M,u,mesh,nonDimParams);
+[flux.F2V1]       = F2V1(N,M,v,mesh,nonDimParams);
+[flux.F2V2]       = F2V2(N,M,v,mesh,nonDimParams);
 
-while true
-    
-    %% Divergence of Convective Flux matrix - 1
-    conv_flux.F1C = F1C(solution,mesh);
-    conv_flux.F2C = F2C(solution,mesh);
-    %% Divergence of Viscous Fluxes - 2
-    visc_flux.F1V1 = F1V1(solution,mesh,nonDimParams);
-    visc_flux.F1V2 = F1V2(solution,mesh,nonDimParams);
-    visc_flux.F2V1 = F2V1(solution,mesh,nonDimParams);
-    visc_flux.F2V2 = F2V2(solution,mesh,nonDimParams);
-    %% Divergence of Pressure Flux matrix - 3
-    press_flux.F1P = F1P(solution,mesh);
-    press_flux.F2P = F2P(solution,mesh);
-    %% G Functions - 4
-    G.G1 = conv_flux.F1C + visc_flux.F1V1 + force;
-    G.G2 = conv_flux.F2C + visc_flux.F2V1;
-    %% W Functions - 5
-    W.W1 = 0.5*(visc_flux.F1V2 + press_flux.F1P);
-    W.W2 = 0.5*(visc_flux.F2V2 + press_flux.F2P);
-    %% Prediction Velocity - 6
-    [pred] =  prediction(mesh, nonDimParams, G, W, dt, t, k, solution);
-    %% Inmersed Boundary Method - 7
-    [pred] = obstacles(mesh, nonDimParams, dimParams, pred);
-    %% Poisson Solver - 8
-    [Pressure, A, b] = poisson(mesh, dt, pred);
-    %% Update of velocity - 9
-    [solution] = update(mesh, Pressure, dt, pred);
-    %% U Bulk - 10
-    UBulk = (sum(solution.u(2:end-1, 1)) + 0.5*solution.u(1,1) + 0.5*solution.u(N,1))/(N);
-    duBulk = (1-UBulk)/dt;
-    force = duBulk;
-    %% Time marching - 11
-    [dt] = marching(mesh, solution, CFL, sigma, nonDimParams);
+% Divergence of Pressure Flux
+P = zeros(M,N);
+P(1,:) = 1;
 
-    k = k + 1;
-    t(k) = t(k-1) + dt;
-    %% Displaying - 12
-    contourf((solution.u))
-    title({['Iterations = ',num2str(k)]...
-        [' Time Elapsed = ',num2str(t(end))]})
-    colormap('parula(10)')
-    colorbar
-    caxis([min(solution.u,[],'all') max(solution.u,[],'all')])
-    drawnow
-    display(dt)
-end
+[flux.F1P]        = F1P(N,M,P,mesh);
+[flux.F2P]        = F2P(N,M,P,mesh);
+
+% Summation of Fluxes
+sum.G1            = flux.F1C + flux.F1V1;
+sum.G2            = flux.F2C + flux.F2V2;
+
+sum.W1            = 0.5*flux.F1V2 + 0.5*flux.F1P;
+sum.W2            = 0.5*flux.F2V2 + 0.5*flux.F2P;

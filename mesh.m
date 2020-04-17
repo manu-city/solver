@@ -25,3 +25,4 @@ end
 for i = 1:mesh.ny
     mesh.Dy(i, 1) = (i-1) * mesh.dy;
 end
+

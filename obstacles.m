@@ -1,20 +1,19 @@
-function [pred] = obstacles(mesh, nonDimParams, dimParams, pred)
-M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
-N = mesh.ny;   % Gridpoints in y-axis (Rows)
+function [VOF, prediction] = obstacles(mesh, nonDimParams, dimParams, N, M, prediction)
+
 dx = mesh.dx;
 dy = mesh.dy;
 
 o_x = nonDimParams.o_x_;
 o_y = nonDimParams.o_y_;
-clearance = nonDimParams.clear_;
+clear = nonDimParams.clear_;
 
 o_num = dimParams.o_num;
 
-u = pred.predU;
-v = pred.predV;
+u = prediction.predU;
+v = prediction.predV;
 
 % Grid points in x in between ribs
-spacing = clearance/dx;
+spacing = clear/dx;
 
 % Grid points in x rib occupies
 o_length = o_x/dx;
@@ -25,7 +24,8 @@ o_height = o_y/dy;
 % domain
 VOF = ones(N,M);
 
-for i = 1:1+(o_height)
+for i = N-(o_height - 1):N
+    
     for n = 1:o_num
         switch n
             case 1 
@@ -33,13 +33,15 @@ for i = 1:1+(o_height)
                     VOF(i,j) = 0;    
                 end
             otherwise 
-                for j = (spacing + o_length) * (n) - (spacing/2 + o_length - 1) : (spacing + o_length) * (n) - (spacing/2 + o_length - 1) + o_length
+                for j = spacing * (n) + (2*n-3):spacing * (n) + (2*n-3) + o_length
                     VOF(i,j) = 0;
                 end
         end 
     end
 end
 
-pred.VOFu = u .* VOF;
-pred.VOFv = v .* VOF;
+prediction.predU = u .* VOF;
+prediction.predV = v .* VOF;
+
 end
+
