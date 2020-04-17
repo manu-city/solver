@@ -1,4 +1,9 @@
 function [Pressure, A, b] = poisson(mesh, dt, pred)
+% Split each boundary into a seperate for loop for speed, change in
+% orientation means that some of the '+M' become '-M', edited some of the b
+% functions to incldue the boundary conditions instead of simply keeping
+% them as adding or subtacting from eachother
+
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)
 dx = mesh.dx;
@@ -53,34 +58,34 @@ for j = 1
 end
 
 
-for i = 1
-    for j = 2:M-1
-        %Top of the domain
-        pointer = (i - 1)*M + j;
-        A(pointer, pointer + M) = 2/dy^2;
-        A(pointer, pointer - 1) = 1/dx^2;
-        A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
-        A(pointer, pointer + 1) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
-                           (+v(2,j))/(dy));
-    end
-end
-
 for i = N
     for j = 2:M-1
-        %Bottom of domain
+        %Top of the domain
         pointer = (i - 1)*M + j;
         A(pointer, pointer - M) = 2/dy^2;
         A(pointer, pointer - 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
+        A(pointer, pointer + 1) = 1/dx^2;
+        b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
+                           (-v(N-1,j))/(dy));
+    end
+end
+
+for i = 1
+    for j = 2:M-1
+        %Bottom of domain
+        pointer = (i - 1)*M + j;
+        A(pointer, pointer + M) = 2/dy^2;
+        A(pointer, pointer - 1) = 1/dx^2;
+        A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + 1) = 1/dx^2;  
         b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
-                           (-v(N-1,j))/(dy)); 
+                           (+v(2,j))/(dy)); 
     end
 end
 
 
-for i = N
+for i = 1
     for j = M
         % Bottom Right Corner
         pointer = (i - 1)*M + j;
@@ -91,42 +96,42 @@ for i = N
     end
 end
 
-for i = N
+for i = 1
     for j = 1
         % Bottom left corner
         pointer = (i - 1)*M + j;
-        A(pointer, pointer - M) = 2/dy^2;
+        A(pointer, pointer + M) = 2/dy^2;
         A(pointer, pointer + 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + (M-2)) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(N,2) - u(N,M-1))/(2*dx) + ...
-                       (-v(N-1,1))/(dy));
+        b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/(2*dx) + ...
+                       (+v(2,1))/(dy));
     end
 end
 
-for i = 1
+for i = N
     for j = M
         % Top right corner 
         pointer = (i - 1)*M + j;
-        A(pointer, pointer + M) = 2/dy^2;
+        A(pointer, pointer - M) = 2/dy^2;
         A(pointer, pointer - (M-2)) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer - 1) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/(2*dx) + ...
-                       (+v(2,M))/(dy));
+        b(pointer,1) = 2/dt * ((u(N,2) - u(N,M-1))/(2*dx) + ...
+                       (-v(N-1,M))/(dy));
     end
 end
 
-for i = 1
+for i = N
     for j = 1
         % Top left corner
         pointer = (i - 1)*M + j;
-        A(pointer, pointer + M) = 2/dy^2;
+        A(pointer, pointer - M) = 2/dy^2;
         A(pointer,pointer + 1) = 1/dx^2;
         A(pointer,pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer,pointer + (M-2)) = 1/dx^2;
         b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/(2*dx) + ...
-                       (+v(2,1))/(dy));
+                       (-v(N-1,1))/(dy));
     end
 end
 

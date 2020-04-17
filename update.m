@@ -1,12 +1,13 @@
 function [solution] = update(mesh, Pressure, dt, pred)
+% Switched the neccesary boundaries due to the orientation
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)
 dx = mesh.dx;
 dy = mesh.dy;
 
 p = Pressure;
-pred_u = pred.VOFu;
-pred_v = pred.VOFv;
+pred_u = pred.VOFu; % Used the VOF*u_star velocity instead of just the u_star
+pred_v = pred.VOFv; % Used the VOF*v_star velocity instead of just the v_star
 
 u  = zeros(N,M);
 v  = zeros(N,M);
@@ -36,7 +37,7 @@ end
 for j = 2:M-1
     
     % Top of domain
-    i = 1;
+    i = N;
     u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,j-1))/(2*dx);
     v(i,j) = 0;
     
@@ -44,17 +45,17 @@ for j = 2:M-1
 end
 
 % Top Right
-i = 1;
+i = N;
 j = M;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,2) - p(i,j-1))/(2*dx);
 
 % Top Left
-i = 1;
+i = N;
 j = 1;
 u(i,j) = pred_u(i,j) - (dt/2) * (p(i,j+1) - p(i,M-1))/(2*dx);
 
 % Bottom of domain
-for i = N
+for i = 1
     for j = 1:M
         u(i,j) = 0;
         v(i,j) = 0;

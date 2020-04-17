@@ -1,5 +1,5 @@
 function [F1V1]=F1V1(solution,mesh,nonDimParams)
-% All bottom parts of the domain are 0 since there's no u velocity here
+% All bottom parts of the doma
 u = solution.u;
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)

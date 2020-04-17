@@ -49,8 +49,6 @@ A_u = full(spdiags([A - beta ...
 A_v = A_u;
 
 % Top condition for u-velocity in A matrix 
-% Since the orienetation has changed the neumann boundary condition of the
-% coefficient would be at the bottom of the A-Matrix now
 A_u(N,N)         = (1 + 2*beta);
 A_u(N,N-1)         = -2*beta;
 

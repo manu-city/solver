@@ -1,4 +1,7 @@
 function [F2V1]=F2V1(solution,mesh,nonDimParams)
+% No v velocity in top or bottom of domain so these boundaries all equal to
+% zero, we're going across these rows so there would be no change from zero
+% at the top and bottom boundary
 v = solution.v;
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)
@@ -17,21 +20,21 @@ for j = 2:M-1         % COLUMNS
         F2V1(i,M) = (1/Re)*((v(i,2) - 2*v(i,M) + v(i,M-1))/((mesh.dx)^2));
         
         % Bottom
-        F2V1(N,j) = 0;
+        F2V1(1,j) = 0;
         
         % Top
-        F2V1(1,j) = 0;
+        F2V1(N,j) = 0;
     end 
 end 
         % Bottom Left Corner
-        F2V1(N,1) = 0;
-        
-        % Bottom Right Corner
-        F2V1(N,M) = 0;
-        
-        % Top Left Corner
         F2V1(1,1) = 0;
         
-        % Top Right Corner
+        % Bottom Right Corner
         F2V1(1,M) = 0;
+        
+        % Top Left Corner
+        F2V1(N,1) = 0;
+        
+        % Top Right Corner
+        F2V1(N,M) = 0;
 end 

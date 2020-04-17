@@ -1,4 +1,6 @@
 function [F2P] = F2P(solution,mesh)
+% Normal pressure to the wall and the top boundary are 0; dP/dy at the
+% wall and top =0
 P = solution.P;
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)
@@ -13,10 +15,10 @@ for j = 2:M-1         % COLUMNS
         F2P(i,j) = -(P(i+1,j) - P(i-1,j))/(2*mesh.dy);
         
         % Bottom
-        F2P(N,j) = 0;
+        F2P(1,j) = 0;
         
         % Top
-        F2P(1,j) = 0;
+        F2P(N,j) = 0;
         
         % Left
         F2P(i,1) = -(P(i+1,1) - P(i-1,1))/(2*mesh.dy);
@@ -26,14 +28,14 @@ for j = 2:M-1         % COLUMNS
     end
 end
         % Bottom Left
-        F2P(N,1) = 0;
-        
-        % Bottom Right
-        F2P(N,M) = 0;
-        
-        % Top Left
         F2P(1,1) = 0;
         
-        % Top Right
+        % Bottom Right
         F2P(1,M) = 0;
+        
+        % Top Left
+        F2P(N,1) = 0;
+        
+        % Top Right
+        F2P(N,M) = 0;
 end

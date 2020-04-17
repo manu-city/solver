@@ -1,4 +1,5 @@
 function [F2V2]=F2V2(solution,mesh,nonDimParams)
+% v is 0 at the top and bottom boundary
 v = solution.v;
 M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
 N = mesh.ny;   % Gridpoints in y-axis (Rows)
@@ -17,21 +18,21 @@ for j = 2:M-1         % COLUMNS
         F2V2(i,M) = (1/Re)*((v(i+1,M) - 2*v(i,M) + v(i-1,M))/((mesh.dy)^2));
         
         % Bottom
-        F2V2(N,j) = 0;
+        F2V2(1,j) = 0;
         
         % Top
-        F2V2(1,j) = 0;
+        F2V2(N,j) = 0;
     end 
 end 
         % Bottom Left Corner
-        F2V2(N,1) = 0;
-        
-        % Bottom Right Corner
-        F2V2(N,M) = 0;
-        
-        % Top Left Corner
         F2V2(1,1) = 0;
         
-        % Top Right Corner
+        % Bottom Right Corner
         F2V2(1,M) = 0;
+        
+        % Top Left Corner
+        F2V2(N,1) = 0;
+        
+        % Top Right Corner
+        F2V2(N,M) = 0;
 end 

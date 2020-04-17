@@ -101,7 +101,7 @@ while true
     contourf((solution.u))
     title({['Iterations = ',num2str(k)]...
         [' Time Elapsed = ',num2str(t(end))]})
-    colormap('parula(64)')
+    colormap('parula(10)')
     colorbar
     caxis([min(solution.u,[],'all') max(solution.u,[],'all')])
     drawnow
