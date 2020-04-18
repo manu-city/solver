@@ -1,16 +1,9 @@
-function [Pressure, A, b] = poisson(mesh, dt, pred)
-% Split each boundary into a seperate for loop for speed, change in
-% orientation means that some of the '+M' become '-M', also added another
-% variable called Press in case we needed to see if the pressure functions
-% were decent in the vector
-M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
-N = mesh.ny;   % Gridpoints in y-axis (Rows)
+function [AP] = Apoisson(mesh, A)
+
+M = mesh.nx;                         
+N = mesh.ny;   
 dx = mesh.dx;
 dy = mesh.dy;
-A = zeros(N*M,N*M);
-b = zeros(N*M, 1);
-u = pred.VOFu;
-v = pred.VOFv;
 
 for i = 2:N-1     % ROWS
     % Centre of the domain
@@ -22,9 +15,6 @@ for i = 2:N-1     % ROWS
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + 1) = 1/dx^2;
         A(pointer, pointer + M) = 1/dy^2;  
-        % b vector
-        b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
-                               (v(i+1,j) - v(i-1,j))/(2*dy));
     end
 end
 
@@ -37,8 +27,6 @@ for j = M
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer - 1) = 1/dx^2;
         A(pointer, pointer + M) = 1/dy^2;
-        b(pointer,1) = 2/dt * ((u(i,2) - u(i,j-1))/(2*dx) + ...
-                           (v(i+1,j) - v(i-1,j))/(2*dy));
     end
 end
 
@@ -51,8 +39,6 @@ for j = 1
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + (M-2)) = 1/dx^2;  
         A(pointer, pointer + M) = 1/dy^2;
-        b(pointer,1) = 2/dt * ((u(i,2) - u(i,M-1))/(2*dx) + ...
-                           (v(i+1,j) - v(i-1,j))/(2*dy)); 
     end
 end
 
@@ -65,8 +51,6 @@ for i = N
         A(pointer, pointer - 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + 1) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
-                           (-v(N-1,j))/(dy));
     end
 end
 
@@ -78,8 +62,6 @@ for i = 1
         A(pointer, pointer - 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + 1) = 1/dx^2;  
-        b(pointer,1) = 2/dt * ((u(i,j+1) - u(i,j-1))/(2*dx) + ...
-                           (+v(2,j))/(dy)); 
     end
 end
 
@@ -90,8 +72,6 @@ for i = 1
         pointer = (i - 1)*M + j;
         % A matrix
         A(pointer, pointer) = 1;
-        % b vector
-        b(pointer,1) = 0;
     end
 end
 
@@ -103,8 +83,6 @@ for i = 1
         A(pointer, pointer + 1) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer + (M-2)) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/(2*dx) + ...
-                       (+v(2,1))/(dy));
     end
 end
 
@@ -116,8 +94,6 @@ for i = N
         A(pointer, pointer - (M-2)) = 1/dx^2;
         A(pointer, pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer, pointer - 1) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(N,2) - u(N,M-1))/(2*dx) + ...
-                       (-v(N-1,M))/(dy));
     end
 end
 
@@ -129,16 +105,10 @@ for i = N
         A(pointer,pointer + 1) = 1/dx^2;
         A(pointer,pointer) = -(2/dx^2 + 2/dy^2);
         A(pointer,pointer + (M-2)) = 1/dx^2;
-        b(pointer,1) = 2/dt * ((u(1,2) - u(1,M-1))/(2*dx) + ...
-                       (-v(N-1,1))/(dy));
     end
 end
 
 % Sparse the matrix for speed
-A = sparse(A);
-
-% Reform pressure matrix
-Press = A\b;
-Pressure  = reshape(Press, [M,N])';
-
+AP = sparse(A);
 end
+
