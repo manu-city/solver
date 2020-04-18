@@ -9,8 +9,8 @@ p = Pressure;
 pred_u = pred.VOFu; % Used the VOF*u_star velocity instead of just the u_star
 pred_v = pred.VOFv; % Used the VOF*v_star velocity instead of just the v_star
 
-u  = solution.u;
-v  = solution.v;
+u  = zeros(N,M);
+v  = zeros(N,M);
 
 for i = 2:N-1       % ROWS
     

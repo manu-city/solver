@@ -1,5 +1,6 @@
-function [prediction] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, N, M)
-
+function [pred] = prediction(mesh, nonDimParams, G, W, dt, t, k, solution, pred, predMat)
+M = mesh.nx;   % Gridpoints in x-axis (Columns)                       
+N = mesh.ny;   % Gridpoints in y-axis (Rows)
 % Extracting Variables
 Re  = nonDimParams.reynolds_;
 dy  = mesh.dy;
@@ -20,17 +21,17 @@ u_0 = solution.u;
 v_0 = solution.v;
 
 % Initialising predictions and A
-predU   = zeros(N,M);
-predV   = zeros(N,M);
-A       = zeros(N,1); % single coloumn vector due to A matrix generation 
-                      % method below
-                      
+predU = pred.predU;
+predV = pred.predV;
+A1 = predMat.A1;
+A1_ = predMat.A1_;
+                    
 % b matrix
 
 % initial time step
 if k == 1
-    b1 = u_0 + 1.5 * dt * G.G1 + dt * W.W1;
-    b2 = v_0 + 1.5 * dt * G.G2 + dt * W.W2;
+    b1 = u_0 + dt * G.G1 + dt * W.W1;
+    b2 = v_0 + dt * G.G2 + dt * W.W2;
 else
     b1 = u_0 + 1.5 * dt * G.G1 - 0.5 * dt2 * GP.G1 + dt * W.W1;
     b2 = v_0 + 1.5 * dt * G.G2 - 0.5 * dt2 * GP.G2 + dt * W.W2;
@@ -40,35 +41,31 @@ end
 beta = dt/(2*Re*dy^2);
 
 % u-velocity A matrix
-A_u = full(spdiags([A - beta ...
-                    A + 1 + 2*beta ...
-                    A - beta], -1:1, N, N));
+A_u = full(spdiags([A1 - beta ...
+                    A1 + 1 + 2*beta ...
+                    A1 - beta], -1:1, N-1, N-1));
            
 % v-velocity A matrix
-A_v = A_u;
+A_v = full(spdiags([A1_ - beta ...
+                    A1_ + 1 + 2*beta ...
+                    A1_ - beta], -1:1, N-2, N-2));
 
 % Top condition for u-velocity in A matrix 
-A_u(1, 1)         = (1 + 2*beta);
-A_u(1, 2)         = -2*beta;
+% Since the orienetation has changed the neumann boundary condition of the
+% coefficient would be at the bottom of the A-Matrix now
+A_u(N-1,N-1)         = (1 + 2*beta);
+A_u(N-1,N-2)         = -2*beta;
+
 
 for j = 1:M
     
     % Corrected x-velocity
-    predU(:, j)   = A_u\b1(:, j);
+    predU(2:N, j)   = A_u\b1(2:N, j);
     
     % Corrected y-velocity
-    predV(:, j)   = A_v\b2(:, j);
-    
-    % Bottom (both u- and v-velocities = 0)
-    predU(N, j) = 0;
-    predV(N, j) = 0;
-    
-    % Top (v-velocity = 0)
-    predV(1, j) = 0;
-    
+    predV(2:N-1, j)   = A_v\b2(2:N-1, j);
 end
 
-prediction.predU = predU;
-prediction.predV = predV;
+pred.predU = predU;
+pred.predV = predV;
 end
-

@@ -56,8 +56,6 @@ solution.P        = ic.P;
 force             = 0;
 
 %% Initialising space
-
-% Fluxes
 conv_flux.F1C     = zeros(N,M);
 conv_flux.F2C     = zeros(N,M);
 visc_flux.F1V1    = zeros(N,M);
@@ -67,16 +65,13 @@ visc_flux.F2V2    = zeros(N,M);
 press_flux.F1P    = zeros(N,M);
 press_flux.F2P    = zeros(N,M);
 
-% Poisson Matrix and vector
 A                 = zeros(N*M);
 b                 = zeros(N*M,1);
 [AP]              = Apoisson(mesh, A);
 
-% u and v star and corresponding A matrices
 pred.predU        = zeros(N,M);
 pred.predV        = zeros(N,M);
-predMat.A1        = zeros(N-1,1);
-predMat.A1_       = zeros(N-2,1);
+A1.A1             = zeros(N,M);
 
 %% Initial time step
 
@@ -116,7 +111,7 @@ while true
     
     %% Prediction Velocity - 6
     
-    [pred] =  prediction(mesh, nonDimParams, G, W, dt, t, k, solution, pred, predMat);
+    [pred] =  prediction(mesh, nonDimParams, G, W, dt, t, k, solution);
     
     %% Inmersed Boundary Method - 7
     
@@ -128,7 +123,7 @@ while true
     
     %% Update of velocity - 9
     
-    [solution] = update(mesh, Pressure, dt, pred, solution);
+    [solution] = update(mesh, Pressure, dt, pred);
     
     %% U Bulk - 10
     
@@ -147,7 +142,7 @@ while true
     
     contourf((solution.u))
     title({['Iterations = ',num2str(k)]...
-           [' Time Elapsed = ',num2str(t(end))]})
+        [' Time Elapsed = ',num2str(t(end))]})
     colormap('parula(64)')
     colorbar
     caxis([min(solution.u,[],'all') max(solution.u,[],'all')])
