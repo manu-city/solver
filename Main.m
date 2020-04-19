@@ -2,7 +2,6 @@ clc
 clear
 close all
 %% Geometry and domain features
-
 % Dimensional parameters of the domain:
 dimParams.L       = 1;
 dimParams.H       = 0.25;
@@ -26,7 +25,7 @@ V                 = dimParams.bulkvel;
 
 % Number of x and y points
 N                 = 100;   % ROWS
-M                 = 50;    % COLUMNS
+M                 = 60;    % COLUMNS
 
 % Mesh the domain, obtain corresponding data from the mesh
 [mesh]            = mesh(nonDimParams, N, M);
@@ -45,7 +44,7 @@ sigma = 0.3;
 N = mesh.ny;
 M = mesh.nx;
 
-ic.u_velocity     = ones(N, M);  
+ic.u_velocity     = ones(N, M);
 ic.v_velocity     = zeros(N, M);
 ic.P              = zeros(N, M);
 
@@ -77,8 +76,11 @@ pred.predV        = zeros(N,M);
 predMat.A1        = zeros(N-1,1);
 predMat.A1_       = zeros(N-2,1);
 
-% Streamlines
-[x,y] = meshgrid(0:M-1,0:N-1);
+% Vortices and Streamlines
+dS                = 5;  % Spacing between streamlines
+dV                = 2;  % Spacing between vortices
+[sx,sy]           = meshgrid(0:dS:M-1,0:dS:N-1);
+[vx,vy]           = meshgrid(0:dV:M-1,0:dV:N-1);
 %% Initial time step
 
 t = zeros();
@@ -145,7 +147,6 @@ while true
     t(k) = t(k-1) + dt;
     
     %% Displaying - Contours
-    
     figure(1)
     contourf((solution.u))
     title('X-Componenet [U]')
@@ -162,16 +163,14 @@ while true
     
     drawnow
     %% Displaying - Vorticies
-    
     figure(3)
     hold on
-    cav = curl(x,y,solution.u,solution.v);
-    pcolor(x,y,cav)
+    cav = curl(vx,vy,solution.u(1:dV:end,1:dV:end),solution.v(1:dV:end,1:dV:end));
+    pcolor(vx,vy,cav)
     shading interp
     hold on
-    quiver(x,y,solution.u,solution.v,'k')
+    quiver(vx,vy,solution.u(1:dV:end,1:dV:end),solution.v(1:dV:end,1:dV:end),'k')
     title('Vorticies')
-    AutoScaleFactor = 0.5;
     xlim manual
     ylim manual
     axis([0 M-1 0 N-1])
@@ -180,6 +179,18 @@ while true
     hold off
     
     drawnow
+    %% Displaying - Streamlines
+    figure(4)
+    streamline(solution.u,solution.v,sx,sy);
+    title('Streamlines')
+    xlim manual
+    ylim manual
+    axis([dS M-1 dS N-1])
+    hold off
+    
+    drawnow
     %% Displaying - Iteration & Time Step
-    fprintf('Iterations = %1.0f and Time Step = %4.5f\n',k,dt);
+    
+    fprintf('Iterations = %1.0f and Time Step = %4.5f\n',k-1,t(end));
+    
 end
